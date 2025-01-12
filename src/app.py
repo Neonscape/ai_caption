@@ -9,6 +9,8 @@ jobqueue: JobQueue = None
 
 jobworker: JobWorker = None
 
+caption_api_url = "http://10.50.1.147:11434/api/generate"
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -22,7 +24,7 @@ async def lifespan(app: FastAPI):
     # initialize database and jobqueue
 
     jobqueue = JobQueue()
-    jobworker = JobWorker(jobqueue=jobqueue)
+    jobworker = JobWorker(jobqueue=jobqueue, caption_api_url=caption_api_url)
     jobworker.init_worker()
 
     yield
