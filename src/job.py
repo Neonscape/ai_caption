@@ -159,5 +159,5 @@ class JobWorker:
         """
         initialize the worker with a timed job.
         """
-        self.scheduler.add_job(self.process_job, "interval", seconds=2)
+        self.scheduler.add_job(self.process_job, "interval", seconds=2, max_instances=1)
         pass
