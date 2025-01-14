@@ -36,7 +36,7 @@ struct Login {
           if(this.username === 'admin' &&  this.password === '123456') {
             router.pushUrl({
               // 需要跳转的路径
-              url: 'pages/Index'
+              url: 'pages/home'
             })
           }
           else {

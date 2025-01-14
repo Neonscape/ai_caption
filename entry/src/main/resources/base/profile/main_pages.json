@@ -3,6 +3,12 @@
     "pages/Index",
     "pages/history_page",
     "pages/picture_show_page",
-    "pages/picture_confrim_page"
+    "pages/picture_confrim_page",
+    "pages/EnrollPage",
+    "pages/profile",
+    "pages/changeName",
+    "pages/self",
+    "pages/about",
+    "pages/home"
   ]
 }

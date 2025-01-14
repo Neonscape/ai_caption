@@ -27,7 +27,7 @@ const tmp = new Item(
 
 @Entry
 @Component
-struct Picture_show_page {
+export default struct Picture_show_page {
   // @State params: routerParams = router.getParams() as routerParams
   @State item : Item = tmp;
   @State pixel: image.PixelMap | undefined = undefined;
