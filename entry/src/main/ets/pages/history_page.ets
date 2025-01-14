@@ -20,8 +20,8 @@ class history_packet{
 
 @Entry
 @Component
-@Preview
-struct history {
+
+export default struct history {
   //packet被修改之后页面会刷新
   @State packet:Array<history_packet> = []
   @State message:string = '点击右上角“+”开始生成'

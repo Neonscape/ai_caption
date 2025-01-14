@@ -2,7 +2,7 @@ import router from '@ohos.router';
 import profile from './profile'
 import picture_confirm from './picture_confrim_page'
 import picture_show from './picture_show_page'
-
+import history from "./history_page"
 let params=router.getParams() as Record<string, string>
 @Entry
 @Component
@@ -45,7 +45,7 @@ struct tabs {
         .tabBar(this.TabBarBuilder(0, '展示？', $r('app.media.avatar'), $r('app.media.avatar')))
 
         TabContent() {
-          picture_show()
+          history()
         }
         .tabBar(this.TabBarBuilder(1, '历史记录？', $r('app.media.avatar'), $r('app.media.avatar')))
         TabContent() {
