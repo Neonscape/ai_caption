@@ -4,6 +4,7 @@ import { fileIo as fs } from '@kit.CoreFileKit';
 import { promptAction, router } from '@kit.ArkUI';
 import { buffer } from '@kit.ArkTS';
 import util from '@ohos.util';
+import router from '@ohos.router'
 
 @Entry
 @Component
