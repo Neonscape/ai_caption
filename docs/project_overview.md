@@ -60,7 +60,7 @@
     - 用户表：存储每一个用户账号的`username, user_token, password`信息
     - 任务表：存储每一个生成任务的`request_token, user_token, image, title, desc`信息
     - 两个数据库均为单例，全局可访问。
-    - 当用户调用`/history`查询生成历史时，从任务表中查询`user_token`与当前用户`user_token`相同的记录并返回。
+    - 当用户调用`/history`查询生成历史时，从任务表和任务队列中查询所有`user_token`与当前用户`user_token`相同的记录并返回。
   - 注册和登录
     - 当用户注册时，在表中查询是否已经存在相同用户名的用户；若存在则返回错误信息，不存在则使用`uuid`为用户生成一个全局唯一的`user_token`，并和`username, password`一同存储在数据库中。
     - 当用户登录时，在数据库中查询对应的表项；若不存在，返回错误信息；若存在则进行密码匹配，匹配成功返回`user_token`，不成功则返回错误信息。
@@ -87,6 +87,14 @@
     - `success`: `bool`类型，登录是否成功
     - `user_token`: `string`类型，用户的唯一标识符
     - `error_msg`: `string`类型，登录失败时返回的错误信息
+- `POST /change_password`
+  - 字段：
+    - `user_token`：`string`类型，用户的唯一标识符
+    - `old_password`: `string`类型，旧密码
+    - `new_password`: `string`类型，新密码
+  - 返回字段（JSON）：
+    - `success`：`bool`类型，修改密码是否成功
+    - `error_msg`: `string`类型，修改密码失败时返回的错误信息（密码错误、不合法密码等）
 - `POST /history`
   - 字段：
     - `user_token`: `string`类型，用户的唯一标识符

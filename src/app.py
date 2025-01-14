@@ -43,17 +43,22 @@ app = FastAPI(lifespan=lifespan)
 
 
 @app.post("/register")
-def register_user():
+def register_user(username: str, password: str):
     pass
 
 
 @app.post("/login")
-def login_user():
+def login_user(username: str, password: str):
+    pass
+
+
+@app.post("/change_password")
+def change_password(user_token: str, old_password: str, new_password: str):
     pass
 
 
 @app.post("/history")
-async def get_history():
+async def get_history(user_token: str):
     pass
 
 
