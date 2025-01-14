@@ -7,7 +7,7 @@ import util from '@ohos.util';
 
 @Entry
 @Component
-struct Picture_confrim_page {
+export default struct Picture_confrim_page {
   @State pixel: image.PixelMap | undefined = undefined;
   @State albumPath: string = '';
   @State photoSize: number = 0;
