@@ -1,7 +1,7 @@
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { image } from '@kit.ImageKit';
 import { fileIo as fs } from '@kit.CoreFileKit';
-import { promptAction } from '@kit.ArkUI';
+import { promptAction, router } from '@kit.ArkUI';
 import { buffer } from '@kit.ArkTS';
 import util from '@ohos.util';
 
@@ -73,7 +73,7 @@ export default struct Picture_confrim_page {
         Row(){
           Button('返回')
             .onClick(() => {
-              // router.back();
+              router.back()
             })
         }
         Blank()

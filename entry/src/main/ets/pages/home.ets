@@ -40,11 +40,6 @@ struct tabs {
     Row() {
       Tabs({ barPosition: BarPosition.End}) {
         TabContent() {
-          picture_confirm()
-        }
-        .tabBar(this.TabBarBuilder(0, '展示？', $r('app.media.avatar'), $r('app.media.avatar')))
-
-        TabContent() {
           history()
         }
         .tabBar(this.TabBarBuilder(1, '历史记录？', $r('app.media.avatar'), $r('app.media.avatar')))

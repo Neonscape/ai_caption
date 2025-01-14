@@ -28,6 +28,11 @@ export default struct history {
   before_page_show()
   {
     //TODO 与后端交互获取
+    let tmp=new history_packet('name1','desc','image')
+    this.packet.push(tmp)
+  }
+  aboutToAppear(): void {
+    this.before_page_show()
   }
   @Builder
   customMenu() {
