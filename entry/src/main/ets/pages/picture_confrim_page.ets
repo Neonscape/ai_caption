@@ -4,6 +4,7 @@ import { fileIo as fs } from '@kit.CoreFileKit';
 import { promptAction } from '@kit.ArkUI';
 import { buffer } from '@kit.ArkTS';
 import util from '@ohos.util';
+import router from '@ohos.router'
 
 @Entry
 @Component
@@ -73,7 +74,7 @@ export default struct Picture_confrim_page {
         Row(){
           Button('返回')
             .onClick(() => {
-              // router.back();
+              router.replaceUrl({url: "pages/home"})
             })
         }
         Blank()
