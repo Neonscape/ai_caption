@@ -1,3 +1,6 @@
+import { promptAction, router } from '@kit.ArkUI';
+import { BusinessError } from '@kit.BasicServicesKit';
+
 class history_packet{
   image:string = ''
   title:string = ''
@@ -24,7 +27,8 @@ struct history {
         .fontColor('black')
         .fontSize(40)
         .onClick(() => {
-        console.log('自定义菜单1被点击');//TODO
+          router.pushUrl({url:'pages/picture_confrim_page'})
+        console.log('自定义菜单1被点击');//TODO 跳转到上传图片的页面
       })
     }
   }
@@ -52,7 +56,7 @@ struct history {
                 .alignItems(HorizontalAlign.Start)
               }.backgroundColor(0xDCDCDC)
               .onClick(()=>{
-                //TODO 跳转到显示页面
+                router.pushUrl({url:'pages/picture_show_page',params:item})
               })
             })
           }
@@ -63,7 +67,6 @@ struct history {
       .mode(NavigationMode.Stack)
       .title("历史记录")
       .menus(this.customMenu())
-
     }
   }
 }
