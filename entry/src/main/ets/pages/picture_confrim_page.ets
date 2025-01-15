@@ -3,7 +3,18 @@ import { image } from '@kit.ImageKit';
 import { fileIo as fs } from '@kit.CoreFileKit';
 import { promptAction, router } from '@kit.ArkUI';
 import util from '@ohos.util';
+import axios, { AxiosResponse } from '@ohos/axios'
 import sendableColorSpaceManager from '@ohos.graphics.sendableColorSpaceManager';
+
+interface generate {
+  user_token: string,
+  image: string
+};
+
+interface generateRetVal{
+  request_token:string,
+  error_msg:string
+}
 
 @Entry
 @Component
@@ -13,6 +24,9 @@ export default struct Picture_confrim_page {
   @State photoSize: number = 0;
   @State hasChosen: boolean = false;
   @State base64Str: string = '';
+  @State request_token : string = '';
+  @State user_token: string = '';
+  // @State user_token: string = (router.getParams() as Record<string, string>)['user_token'];
 
   async getPictureFromAlbum() {
     // 拉起相册，选择图片
@@ -57,6 +71,23 @@ export default struct Picture_confrim_page {
         duration: 2000
       });
       console.info(this.base64Str);
+      axios.post<string, AxiosResponse<string>, generate>('/generate', {
+        user_token: this.user_token,
+        image: this.base64Str
+      })
+        .then((response: AxiosResponse<string>) => {
+          console.info(JSON.stringify(response));
+          let rvalue:generateRetVal = JSON.parse(response.data) as generateRetVal
+          if (rvalue.error_msg) {
+            console.error(`Error occurred: ${rvalue.error_msg}`);
+          } else {
+            this.request_token=rvalue.request_token;
+            console.log(`Request token received: ${rvalue.request_token}`);
+          }
+        })
+        .catch((error:string) => {
+          console.info(JSON.stringify(error));
+        })
     }
     else{
       promptAction.showToast({

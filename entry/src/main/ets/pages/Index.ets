@@ -1,11 +1,17 @@
 import promptAction from '@ohos.promptAction'
 import router from '@ohos.router'
 import axios, { AxiosResponse } from '@ohos/axios'
+import  PreferencesUtils  from '../utils/PreferenceUtils'
 
 interface user {
   Name: string,
   Password: string
 };
+
+interface returnValue{
+  Status:boolean,
+  UserToken:string
+}
 
 @Entry
 @Component
@@ -51,19 +57,26 @@ struct Login {
           })
             .then((response: AxiosResponse<string>) => {
               console.info(JSON.stringify(response));
-              promptAction.showToast({
-                message:'登录成功'
-              })
-              router.pushUrl({
-                // 需要跳转的路径
-                url: 'pages/home'
-              })
+              let rvalue:returnValue = JSON.parse(response.data) as returnValue
+              if(rvalue.Status == true)
+              {
+                PreferencesUtils.put("user_name", this.username)
+                PreferencesUtils.put("user_token", rvalue.UserToken)
+                promptAction.showToast({
+                  message:'注册成功'
+                })
+                router.pushUrl({
+                  // 需要跳转的路径
+                  url: 'pages/home'
+                })
+              }else {
+                promptAction.showToast({
+                  message:'账号或密码格式不正确'
+                })
+              }
             })
             .catch((error:string) => {
               console.info(JSON.stringify(error));
-              promptAction.showToast({
-                message:'账号或密码格式不正确'
-              })
             })
         })
       Text('注册账号').fontColor('#0078fd')
