@@ -2,8 +2,8 @@ import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { image } from '@kit.ImageKit';
 import { fileIo as fs } from '@kit.CoreFileKit';
 import { promptAction, router } from '@kit.ArkUI';
-import { buffer } from '@kit.ArkTS';
 import util from '@ohos.util';
+import sendableColorSpaceManager from '@ohos.graphics.sendableColorSpaceManager';
 
 @Entry
 @Component
@@ -30,7 +30,6 @@ export default struct Picture_confrim_page {
     let buffer = new ArrayBuffer(this.photoSize);
     fs.readSync(file.fd, buffer);
     fs.closeSync(file);
-    // this.array = new Uint8Array(buffer);
 
     // 解码成PixelMap
     const imageSource = image.createImageSource(buffer);
@@ -70,14 +69,22 @@ export default struct Picture_confrim_page {
   build() {
     Row() {
       Column() {
-        Row(){
-          Button('返回')
-            .onClick(() => {
-              router.back()
-            })
-        }
         Blank()
-          .height('5%')
+          .height('3%')
+        Row(){
+          Column(){
+            Button('返回')
+              .onClick(() => {
+                router.back()
+              })
+          }
+          .width('35%')
+          Column(){}
+          .width('65%')
+        }
+          .height('10%')
+        Blank()
+          .height('10%')
         Image(this.pixel)
           .width('80%')
           .aspectRatio(1)
@@ -101,6 +108,9 @@ export default struct Picture_confrim_page {
           }
           .width('50%')
         }
+          .height('10%')
+        Blank()
+          .height('20%')
       }
       .width('100%')
     }
