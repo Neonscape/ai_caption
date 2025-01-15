@@ -44,25 +44,29 @@ struct EnrollPage {
         .margin({top: 30})
           // 点击登录按钮触发某些条件完成路径跳转
         .onClick(() => {
-          axios.post<string, AxiosResponse<string>, user>('/register', {
+          axios.post<string, AxiosResponse<boolean>, user>('/register', {
             Name: this.username,
             Password: this.password
           })
-            .then((response: AxiosResponse<string>) => {
-              console.info(JSON.stringify(response));
-              promptAction.showToast({
-                message:'注册成功'
-              })
-              router.pushUrl({
-                // 需要跳转的路径
-                url: 'pages/home'
-              })
+            .then((response: AxiosResponse<boolean>) => {
+              console.info(response.data.toString());
+              if(response.data == true)
+              {
+                promptAction.showToast({
+                  message:'注册成功'
+                })
+                router.pushUrl({
+                  // 需要跳转的路径
+                  url: 'pages/home'
+                })
+              }else {
+                promptAction.showToast({
+                  message:'账号或密码格式不正确'
+                })
+              }
             })
             .catch((error:string) => {
               console.info(JSON.stringify(error));
-              promptAction.showToast({
-                message:'账号或密码格式不正确'
-              })
             })
         })
       Text('返回登陆').fontColor('#0078fd')
