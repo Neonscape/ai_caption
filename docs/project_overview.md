@@ -104,6 +104,7 @@
       - 字段：
         - `status`：`boolean`类型，生成是否完成
         - `index`：`int`类型，当前项目之前还有多少个排队项目（若未完成生成）
+        - `request_token`：`string`类型，该次请求的标识符
         - `image`：`string`类型，`base64`编码的图片
         - `title`：`string`类型，生成的标题（若已完成生成）
         - `desc`：`string`类型，生成的描述（若已完成生成）
