@@ -1,11 +1,18 @@
 import promptAction from '@ohos.promptAction'
 import router from '@ohos.router'
+import axios, { AxiosResponse } from '@ohos/axios'
+
+interface user {
+  Name: string,
+  Password: string
+};
+
 @Entry
 @Component
 struct EnrollPage {
   // 创建用户的账号密码
-  @State username:string = 'admin'
-  @State password: string = '123456'
+  @State username:string = ''
+  @State password: string = ''
 
   build() {
     Column() {
@@ -14,6 +21,10 @@ struct EnrollPage {
         .width(80)
         .height(80)
         .margin({top:100})
+      //注册界面
+      Text('注册').fontColor('#ff011221')
+        .margin({top: 10})
+        .fontSize(17)
       //TextInput来完成用户名注册
       TextInput({placeholder:'请输入用户名',text:this.username })
         .margin({top:20})
@@ -33,18 +44,26 @@ struct EnrollPage {
         .margin({top: 30})
           // 点击登录按钮触发某些条件完成路径跳转
         .onClick(() => {
-          if(this.username === 'admin' &&  this.password === '123456') {
-            router.pushUrl({
-              // 需要跳转的路径
-              url: 'pages/enroll'
+          axios.post<string, AxiosResponse<string>, user>('/register', {
+            Name: this.username,
+            Password: this.password
+          })
+            .then((response: AxiosResponse<string>) => {
+              console.info(JSON.stringify(response));
+              promptAction.showToast({
+                message:'注册成功'
+              })
+              router.pushUrl({
+                // 需要跳转的路径
+                url: 'pages/home'
+              })
             })
-          }
-          else {
-            // 账号密码不符弹出警告
-            promptAction.showToast({
-              message:'账号或密码格式不正确'
+            .catch((error:string) => {
+              console.info(JSON.stringify(error));
+              promptAction.showToast({
+                message:'账号或密码格式不正确'
+              })
             })
-          }
         })
       Text('返回登陆').fontColor('#0078fd')
         .margin({top: 10})
@@ -57,3 +76,4 @@ struct EnrollPage {
     }.width('100%').height('100%').padding(20)
   }
 }
+
