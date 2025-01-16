@@ -35,6 +35,8 @@ async def lifespan(app: FastAPI):
 
     # initialize database and jobqueue
 
+    global request_db, task_service, auth_service, jobqueue, jobworker
+
     request_db = RequestDatabase()
     request_db.init_database()
     task_service = TaskService()
@@ -44,6 +46,7 @@ async def lifespan(app: FastAPI):
         job_queue=jobqueue, caption_api_url=caption_api_url, task_service=task_service
     )
     jobworker.init_worker()
+    assert task_service is not None and auth_service is not None
     yield
 
     # shutdown tasks...
