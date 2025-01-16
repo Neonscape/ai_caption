@@ -2,8 +2,8 @@ import { router } from '@kit.ArkUI';
 import { http } from '@kit.NetworkKit';
 import { JSON } from '@kit.ArkTS';
 
-
-
+//重要
+//在第15行，137行，164行，168行，193行出现user_token/url不清楚导致的问题，如果知晓user_token、url请修改
 
 //给历史记录打包
 export  class history_packet{
@@ -77,20 +77,23 @@ export default struct history {
   @State index:number = 0
   @State packet:Array<history_packet> = []
   @State message:string = '点击右上角“+”开始生成'
+  //将history_packet的包放入packet中
   push_packet(title:string,desc:string,image:string,task_token:string,finish:boolean)
   {
     let tmp=new history_packet(title,desc,image,task_token,finish)
     this.packet.push(tmp)
   }
+  //开启计时器，每分钟使用一次refresh函数
   startTimer() {
     this.time = setInterval(this.refresh, 60000);
   }
-
+ //关闭计时器
   aboutToDisappear() {
     if (this.time !== undefined) {
       clearInterval(this.time);
     }
   }
+  //对后端/history端口返回的json字符串解析
   un_json(data:string)
   {
     //console.debug(data)
@@ -107,6 +110,7 @@ export default struct history {
       }
     })
   }
+  //遍历packet寻找未完成的，如果存在未完成的，在寻找结束后调用/history接口重新获取
   refresh()
   {
     let t:boolean = false;
@@ -124,6 +128,7 @@ export default struct history {
       this.before_page_show()
     }
   }
+  //对未完成的packet查询，如果完成了返回true
   refresh_packet(item:history_packet)
   {
     let t :boolean = false;
@@ -150,6 +155,7 @@ export default struct history {
     })
     return t;
   }
+  //调用/history接口（在渲染前调用和查询发现刚完成的任务时调用
   before_page_show()
   {
     //TODO 与后端交互获取
@@ -171,6 +177,7 @@ export default struct history {
         }
     })
   }
+  //渲染前调用，启动history接口+计时器
   aboutToAppear(): void {
     this.before_page_show()
     this.startTimer()
@@ -192,7 +199,7 @@ export default struct history {
           {
             this.push_packet('正在生成','','',t.token,false)
           }
-        console.log('自定义菜单1被点击');//TODO 跳转到上传图片的页面
+        console.log('自定义菜单1被点击');
       })
     }
   }
