@@ -62,6 +62,8 @@ interface HistoryResponse {
 
 export default struct history {
   //packet被修改之后页面会刷新
+
+  @State index:number = 0
   @State packet:Array<history_packet> = []
   @State message:string = '点击右上角“+”开始生成'
   push_packet(title:string,desc:string,image:string)
