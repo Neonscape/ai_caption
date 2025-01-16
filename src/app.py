@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from .job import JobQueue, JobWorker
 from .types import CaptionRequest
 from .db import TaskService, AuthService, RequestDatabase
+from .utils import singleton
 
 request_db: RequestDatabase = None
 jobqueue: JobQueue = None
@@ -32,7 +33,7 @@ async def lifespan(app: FastAPI):
     auth_service = AuthService()
     jobqueue = JobQueue()
     jobworker = JobWorker(
-        jobqueue=jobqueue, caption_api_url=caption_api_url, task_service=task_service
+        job_queue=jobqueue, caption_api_url=caption_api_url, task_service=task_service
     )
     jobworker.init_worker()
     yield

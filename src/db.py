@@ -2,17 +2,7 @@ import sqlite3
 import hashlib
 import uuid
 from loguru import logger
-
-
-def singleton(cls):
-    instances = {}
-
-    def get_instance(*args, **kwargs):
-        if cls not in instances:
-            instances[cls] = cls(*args, **kwargs)
-        return instances[cls]
-
-    return get_instance
+from .utils import singleton
 
 
 class Database:

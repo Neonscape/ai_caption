@@ -7,6 +7,8 @@ from typing import Optional
 from apscheduler.schedulers.background import BackgroundScheduler
 import uuid, asyncio, aiohttp, json
 from .db import TaskService
+from .utils import singleton
+
 
 caption_prompt = """
 请为这张图片生成RPG游戏中人物或物品的名字和描述，要求幽默诙谐，能让人会心一笑。
