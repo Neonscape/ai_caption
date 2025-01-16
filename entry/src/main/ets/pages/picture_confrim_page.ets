@@ -68,7 +68,7 @@ export default struct Picture_confrim_page {
     if(this.hasChosen){
       promptAction.showToast({
         message: '正在生成...',
-        duration: 2000
+        duration: 1000
       });
       console.info(this.base64Str);
       axios.post<string, AxiosResponse<string>, generate>('/generate', {
@@ -88,6 +88,15 @@ export default struct Picture_confrim_page {
         .catch((error:string) => {
           console.info(JSON.stringify(error));
         })
+      setTimeout(() => {
+        promptAction.showToast({
+          message: '任务号:'+this.request_token+',即将返回历史界面',
+          duration: 1500
+        });
+      }, 1000);
+      setTimeout(() => {
+        router.back({ url:'pages/history_page',params: { request_token: this.request_token } });
+      }, 2500);
     }
     else{
       promptAction.showToast({
