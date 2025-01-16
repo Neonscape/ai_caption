@@ -47,7 +47,7 @@ class ChangePasswordRequest(BaseModel):
     new_password: str
 
 
-class HistoryRequest(BaseMOdel):
+class HistoryRequest(BaseModel):
     """
     Class for history requests.
 
