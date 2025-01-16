@@ -1,10 +1,13 @@
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { image } from '@kit.ImageKit';
 import { fileIo as fs } from '@kit.CoreFileKit';
-import { promptAction, router } from '@kit.ArkUI';
+import { prompt, promptAction, router } from '@kit.ArkUI';
 import util from '@ohos.util';
 import axios, { AxiosResponse } from '@ohos/axios'
 import sendableColorSpaceManager from '@ohos.graphics.sendableColorSpaceManager';
+import PreferencesUtils from '../utils/PreferenceUtils';
+
+let base_url = 'http://192.168.3.27:8081'
 
 interface generate {
   user_token: string,
@@ -61,22 +64,38 @@ export default struct Picture_confrim_page {
     let base64Helper = new util.Base64Helper();
     let uint8Arr = new Uint8Array(readBuffer);
     let pixelStr = base64Helper.encodeToStringSync(uint8Arr);
-    this.base64Str = 'data:image/jpg;base64,' + pixelStr;
+    this.base64Str = /*'data:image/jpg;base64,' +*/ pixelStr;
   }
 
-  generate(){
+  async generate(){
     if(this.hasChosen){
       promptAction.showToast({
         message: '正在生成...',
         duration: 1000
       });
-      console.info(this.base64Str);
-      axios.post<string, AxiosResponse<string>, generate>('/generate', {
+      let token: string = (await PreferencesUtils.get("user_token")) as string
+      console.info("token is " + token)
+      this.user_token = token
+      console.info(this.user_token + this.base64Str);
+      axios.post<string, AxiosResponse, generate>(base_url + '/generate', {
         user_token: this.user_token,
         image: this.base64Str
       })
-        .then((response: AxiosResponse<string>) => {
+        .then((response: AxiosResponse) => {
           console.info(JSON.stringify(response));
+          if (response.data.error_msg)
+          {
+            promptAction.showToast({
+              message: "生成错误：" + response.data.error_msg
+            })
+            console.error(`Error occurred: ${response.data.error_msg}`);
+          }
+          else
+          {
+            this.request_token = response.data.request_token
+            console.log(`Request token received: ${response.data.request_token}`);
+          }
+          /*
           let rvalue:generateRetVal = JSON.parse(response.data) as generateRetVal
           if (rvalue.error_msg) {
             console.error(`Error occurred: ${rvalue.error_msg}`);
@@ -84,6 +103,7 @@ export default struct Picture_confrim_page {
             this.request_token=rvalue.request_token;
             console.log(`Request token received: ${rvalue.request_token}`);
           }
+          */
         })
         .catch((error:string) => {
           console.info(JSON.stringify(error));
@@ -97,7 +117,7 @@ export default struct Picture_confrim_page {
       setTimeout(() => {
         // router.back({ url:'pages/history_page',params: { request_token: this.request_token } });
         router.back({
-          url: 'pages/history_page',
+          url: 'pages/home',
           params: {
             finish: true,
             token: this.request_token
@@ -123,7 +143,7 @@ export default struct Picture_confrim_page {
             Button('返回')
               .onClick(() => {
                 router.back({
-                  url: 'pages/history_page',
+                  url: 'pages/home',
                   params: {
                     finish: false,
                     token: this.request_token

@@ -1,3 +1,9 @@
+import axios, {AxiosResponse, AxiosError} from '@ohos/axios'
+import PreferenceUtils from '../utils/PreferenceUtils'
+import promptAction from '@ohos.promptAction';
+
+let base_url = "http://192.168.3.27:8081"
+
 @Entry
 @Component
 struct ModifyUsername {
@@ -57,8 +63,23 @@ struct ModifyUsername {
             .height(45)
             .backgroundColor('#4CAF50')
             .fontColor('#fff')
-            .onClick(() => {
+            .onClick(async () => {
               const newUsername = this.username
+              let resp: AxiosResponse = await axios.post(
+                base_url + '/change_username',
+                Object({
+                  "user_token": await PreferenceUtils.get("user_token", String) as string,
+                  "new_username": newUsername
+                })
+              )
+              console.info(resp.data)
+              if (resp.data.success === false)
+                promptAction.showToast({
+                  message: resp.data.error_msg
+                })
+              else promptAction.showToast({
+                message: "Username updated."
+              })
               // 调用接口修改
             })
         }

@@ -2,10 +2,17 @@ import promptAction from '@ohos.promptAction'
 import router from '@ohos.router'
 import axios, { AxiosResponse } from '@ohos/axios'
 
+let base_url = "http://192.168.3.27:8081"
+
 interface user {
-  Name: string,
-  Password: string
+  username: string,
+  password: string
 };
+
+interface register_result{
+  success: boolean,
+  error_message: string
+}
 
 @Entry
 @Component
@@ -44,13 +51,13 @@ struct EnrollPage {
         .margin({top: 30})
           // 点击登录按钮触发某些条件完成路径跳转
         .onClick(() => {
-          axios.post<string, AxiosResponse<boolean>, user>('/register', {
-            Name: this.username,
-            Password: this.password
+          axios.post<string, AxiosResponse, user>(base_url + '/register', {
+            username: this.username,
+            password: this.password
           })
-            .then((response: AxiosResponse<boolean>) => {
+            .then((response: AxiosResponse) => {
               console.info(response.data.toString());
-              if(response.data == true)
+              if(response.data.success == true)
               {
                 promptAction.showToast({
                   message:'注册成功'

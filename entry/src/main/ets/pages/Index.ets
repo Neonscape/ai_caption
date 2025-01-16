@@ -3,14 +3,17 @@ import router from '@ohos.router'
 import axios, { AxiosResponse } from '@ohos/axios'
 import  PreferencesUtils  from '../utils/PreferenceUtils'
 
+let base_url = "http://192.168.3.27:8081"
+
 interface user {
-  Name: string,
-  Password: string
+  username: string,
+  password: string
 };
 
 interface returnValue{
-  Status:boolean,
-  UserToken:string
+  success:boolean,
+  user_token:string,
+  error_msg:string
 }
 
 @Entry
@@ -51,19 +54,39 @@ struct Login {
         .margin({top: 30})
           // 点击登录按钮触发某些条件完成路径跳转
         .onClick(() => {
-          axios.post<string, AxiosResponse<string>, user>('/login', {
-            Name: this.username,
-            Password: this.password
+          axios.post<string, AxiosResponse, user>(base_url + '/login', {
+            username: this.username,
+            password: this.password
           })
-            .then((response: AxiosResponse<string>) => {
+            .then((response: AxiosResponse) => {
               console.info(JSON.stringify(response));
+              if(response.data.success === true)
+              {
+                PreferencesUtils.put("username", this.username)
+                PreferencesUtils.put("user_token", response.data.user_token)
+                promptAction.showToast({
+                  message: "登录成功"
+                })
+                router.pushUrl({
+                  url: 'pages/home'
+                })
+              }
+              else
+              {
+                promptAction.showToast({
+                  message: '登录失败：' + response.data.error_msg
+                })
+              }
+
+
+              /*
               let rvalue:returnValue = JSON.parse(response.data) as returnValue
-              if(rvalue.Status == true)
+              if(rvalue.success === true)
               {
                 PreferencesUtils.put("user_name", this.username)
-                PreferencesUtils.put("user_token", rvalue.UserToken)
+                PreferencesUtils.put("user_token", rvalue.user_token)
                 promptAction.showToast({
-                  message:'注册成功'
+                  message:'登录成功'
                 })
                 router.pushUrl({
                   // 需要跳转的路径
@@ -71,9 +94,10 @@ struct Login {
                 })
               }else {
                 promptAction.showToast({
-                  message:'账号或密码格式不正确'
+                  message:rvalue.error_msg
                 })
               }
+              */
             })
             .catch((error:string) => {
               console.info(JSON.stringify(error));

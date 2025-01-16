@@ -1,11 +1,13 @@
 import { router } from '@kit.ArkUI';
-import { http } from '@kit.NetworkKit';
+// import { http } from '@kit.NetworkKit';
 import { JSON } from '@kit.ArkTS';
 import  PreferencesUtils from '../utils/PreferenceUtils';
+import axios, { AxiosResponse, AxiosError } from '@ohos/axios'
 
 //重要
 //在第170,143行出现url不清楚导致的问题，如果知晓url请修改
 let user_token:string = ''
+let base_url : string = 'http://192.168.3.27:8081'
 //给历史记录打包
 export  class history_packet{
   is_finish:boolean = false;
@@ -117,27 +119,54 @@ export default struct history {
     })
   }
   //遍历packet寻找未完成的，如果存在未完成的，在寻找结束后调用/history接口重新获取
-  refresh()
+  async refresh()
   {
     let t:boolean = false;
-    this.packet.forEach(item=>{
+    for (const item of this.packet)
+    {
+      if (item.is_finish === false)
+      {
+        let result : boolean = await this.refresh_packet(item)
+        if(result === true)
+        {
+          t = true;
+          break;
+        }
+      }
+    }
+    /*
+    this.packet.forEach(async item => {
       if(item.is_finish===false)
       {
-        if(this.refresh_packet(item)=== true)
+
+        if(result === true)
         {
           t = true
         }
       }
     })
+
+    */
     if(t)
     {
       this.before_page_show()
     }
   }
   //对未完成的packet查询，如果完成了返回true
-  refresh_packet(item:history_packet)
+  async refresh_packet(item:history_packet): Promise<boolean>
   {
-    let t :boolean = false;
+    try{
+      let response : AxiosResponse = await axios.post(
+        base_url + '/request_status',
+        Object({"request_token": item.request_token})
+      )
+      return response.data.finish;
+    } catch (e) {
+      console.log(e.message)
+    }
+    return false;
+
+    /*
     let http_request = http.createHttp()
     http_request.request(
       "POST /history",//url
@@ -160,11 +189,24 @@ export default struct history {
       }
     })
     return t;
+    */
   }
   //调用/history接口（在渲染前调用和查询发现刚完成的任务时调用
   before_page_show()
   {
     //TODO 与后端交互获取
+    axios.post(
+      base_url + '/history',
+      Object({
+        "user_token": user_token
+      })
+    ).then((res: AxiosResponse) => {
+      this.un_json(res.data.result)
+    }).catch((e: AxiosError) => {
+      console.log("error: " + e.message);
+    })
+
+    /*
     let http_request = http.createHttp()
     http_request.request(
       "POST /history",//url
@@ -182,6 +224,7 @@ export default struct history {
           console.error('请求失败:',err)
         }
     })
+    */
   }
   //渲染前调用，启动history接口+计时器
   aboutToAppear(): void {
