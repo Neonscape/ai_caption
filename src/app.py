@@ -3,7 +3,15 @@ from loguru import logger
 import base64
 from contextlib import asynccontextmanager
 from .job import JobQueue, JobWorker
-from .types import CaptionRequest
+from .types import (
+    CaptionRequest,
+    User,
+    ChangeUsernameRequest,
+    ChangePasswordRequest,
+    HistoryRequest,
+    GenerateRequest,
+    StatusRequest,
+)
 from .db import TaskService, AuthService, RequestDatabase
 from .utils import singleton
 
@@ -52,31 +60,34 @@ app = FastAPI(lifespan=lifespan)
 
 
 @app.post("/register")
-def register_user(username: str, password: str):
-    return auth_service.register(username=username, password=password)
+def register_user(body: User):
+    return auth_service.register(username=body.username, password=body.password)
 
 
 @app.post("/login")
-def login_user(username: str, password: str):
-    return auth_service.login(username=username, password=password)
+def login_user(body: User):
+    return auth_service.login(username=body.username, password=body.password)
 
 
 @app.post("/change_username")
-def change_username(user_token: str, new_username: str):
+def change_username(body: ChangeUsernameRequest):
     return auth_service.change_username(
-        user_token=user_token, new_username=new_username
+        user_token=body.user_token, new_username=body.new_username
     )
 
 
 @app.post("/change_password")
-def change_password(user_token: str, old_password: str, new_password: str):
+def change_password(body: ChangePasswordRequest):
     return auth_service.change_password(
-        user_token=user_token, old_password=old_password, new_password=new_password
+        user_token=body.user_token,
+        old_password=body.old_password,
+        new_password=body.new_password,
     )
 
 
 @app.post("/history")
-async def get_history(user_token: str):
+async def get_history(body: HistoryRequest):
+    user_token = body.user_token
     unfinished_jobs = jobworker.current_requests + [
         task for task in jobqueue.queue if task.user_token == user_token
     ]
@@ -105,7 +116,7 @@ async def get_history(user_token: str):
 
 
 @app.post("/generate")
-def generate_task(user_token: str, image: str):
+def generate_task(body: GenerateRequest):
     """
     perform input checks;
     if checks passed then create a new task in the task queue.
@@ -119,6 +130,9 @@ def generate_task(user_token: str, image: str):
         error_msg -- error message if any.
 
     """
+
+    user_token = body.user_token
+    image = body.image
 
     # check if image is valid base64 string
     try:
@@ -143,7 +157,8 @@ def generate_task(user_token: str, image: str):
 
 
 @app.post("/request_status")
-def request_status(request_token: str):
+def request_status(body: StatusRequest):
+    request_token = body.request_token
     if jobqueue is None:
         logger.error("JOB QUEUE IS NOT INITIALIZED!")
         exit(1)

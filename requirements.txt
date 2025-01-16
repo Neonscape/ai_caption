@@ -4,3 +4,4 @@ fastapi
 apscheduler
 loguru
 uvicorn[standard]
+aiohttp

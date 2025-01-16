@@ -13,11 +13,49 @@ class User(BaseModel):
         password: user password
     """
 
-    user_token: str = Field(..., description="User token")
     username: str = Field(..., description="User name")
     password: str = Field(..., description="User password")
     # TODO: more fields like avatar, gender, etc.
     # TODO: should we implement request rate limit?
+
+
+class ChangeUsernameRequest(BaseModel):
+    """
+    Class for changing username request.
+
+    Attributes:
+        **user_token**: global identifier; unique for each user. This is the primary key for user table.
+        new_username: new username for user
+    """
+
+    user_token: str
+    new_username: str
+
+
+class ChangePasswordRequest(BaseModel):
+    """
+    Class for changing password request.
+
+    Attributes:
+        **user_token**: global identifier; unique for each user. This is the primary key for user table.
+        old_password: old password for user
+        new_password: new password for user
+    """
+
+    user_token: str
+    old_password: str
+    new_password: str
+
+
+class HistoryRequest(BaseMOdel):
+    """
+    Class for history requests.
+
+    Attributes:
+        **user_token**: the user to look history for.
+    """
+
+    user_token: str
 
 
 class CaptionRequest(BaseModel):
@@ -35,6 +73,30 @@ class CaptionRequest(BaseModel):
     request_token: str
     user_token: str
     image: str
+
+
+class GenerateRequest(BaseModel):
+    """
+    class for /generate requests. This is the API request.
+
+    Attributes:
+        **user_token**: the user who sent the request.
+        image: the image to be captioned; base64 encoded image string.
+    """
+
+    user_token: str
+    image: str
+
+
+class StatusRequest(BaseModel):
+    """
+    class for /status requests. This is the API request.
+
+    Attributes:
+        **request_token**: the request token to query.
+    """
+
+    request_token: str
 
 
 class RequestQueryResult(BaseModel):
