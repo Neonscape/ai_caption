@@ -7,15 +7,18 @@ import { JSON } from '@kit.ArkTS';
 
 //给历史记录打包
 export  class history_packet{
+  is_finish:boolean = false;
   image:string = ''//图片地址
   title:string = ''//标题
   desc:string = ''//描述
   request_token:string = ''//任务token
   //user_token:string = 'user_token'//用户的token，此处默认token为全局变量
-  constructor(title: string, desc: string,image:string) {
+  constructor(title: string, desc: string,image:string,task_token:string,finish:boolean) {
     this.title = title;
     this.desc = desc;
     this.image = image;
+    this.request_token = task_token;
+    this.is_finish = finish
   }
 }
 /*const jsonString = `{
@@ -50,11 +53,19 @@ interface Item {
   image?: string; // 可选字段
   title?: string; // 可选字段
   desc?: string;  // 可选字段
+  task_token:string
 }
 interface HistoryResponse {
   items: Item[];
 }
-
+interface re_status{
+  finish:boolean;
+  index?:number;
+}
+interface confirm{
+  finish:boolean;
+  token:string;
+}
 
 
 @Entry
@@ -62,14 +73,23 @@ interface HistoryResponse {
 
 export default struct history {
   //packet被修改之后页面会刷新
-
+  @State time:number|undefined = 0
   @State index:number = 0
   @State packet:Array<history_packet> = []
   @State message:string = '点击右上角“+”开始生成'
-  push_packet(title:string,desc:string,image:string)
+  push_packet(title:string,desc:string,image:string,task_token:string,finish:boolean)
   {
-    let tmp=new history_packet(title,desc,image)
+    let tmp=new history_packet(title,desc,image,task_token,finish)
     this.packet.push(tmp)
+  }
+  startTimer() {
+    this.time = setInterval(this.refresh, 60000);
+  }
+
+  aboutToDisappear() {
+    if (this.time !== undefined) {
+      clearInterval(this.time);
+    }
   }
   un_json(data:string)
   {
@@ -79,15 +99,57 @@ export default struct history {
     {
       if(item.title&&item.desc&&item.image)
       {
-        this.push_packet(item.title,item.desc,item.image)
+        this.push_packet(item.title,item.desc,item.image,item.task_token,item.status)
       }
       else
       {
-        this.push_packet('正在生成','','')
+        this.push_packet('正在生成','','',item.task_token,item.status)
       }
     })
   }
-
+  refresh()
+  {
+    let t:boolean = false;
+    this.packet.forEach(item=>{
+      if(item.is_finish===false)
+      {
+        if(this.refresh_packet(item)=== true)
+        {
+          t = true
+        }
+      }
+    })
+    if(t)
+    {
+      this.before_page_show()
+    }
+  }
+  refresh_packet(item:history_packet)
+  {
+    let t :boolean = false;
+    let http_request = http.createHttp()
+    http_request.request(
+      "POST /history",//url
+      {
+        method:http.RequestMethod.GET,
+        header:{
+          'Authorization': 'Bearer '  + item.request_token
+        }
+      },(err,data)=>{
+      if(!err)
+      {
+        let js_data = JSON.parse(data.result as string);
+        if((js_data as re_status).finish === true)
+        {
+          t = true
+        }
+      }
+      else {
+        console.error('请求失败:',err)
+      }
+    })
+    return t;
+  }
   before_page_show()
   {
     //TODO 与后端交互获取
@@ -111,6 +173,7 @@ export default struct history {
   }
   aboutToAppear(): void {
     this.before_page_show()
+    this.startTimer()
   }
   @Builder
   customMenu() {
@@ -120,10 +183,15 @@ export default struct history {
         .fontColor('black')
         .fontSize(40)
         .onClick(() => {
-          router.pushUrl({url:'pages/picture_confrim_page'})
+          router.pushUrl({url:'pages/picture_confrim_page'//,params:{user_token:user_token}
+          })
 
           //测试使用，后续可修改为从生成页面返回的request_token信息或其他信息
-
+          let t = router.getParams() as confirm
+          if(t.finish)
+          {
+            this.push_packet('正在生成','','',t.token,false)
+          }
         console.log('自定义菜单1被点击');//TODO 跳转到上传图片的页面
       })
     }
