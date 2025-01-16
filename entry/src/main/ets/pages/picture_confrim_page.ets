@@ -13,7 +13,7 @@ interface generate {
 
 interface generateRetVal{
   request_token:string,
-  error_msg:string
+  error_msg?:string
 }
 
 @Entry
@@ -24,7 +24,7 @@ export default struct Picture_confrim_page {
   @State photoSize: number = 0;
   @State hasChosen: boolean = false;
   @State base64Str: string = '';
-  @State request_token : string = '';
+  @State request_token : string = '1919810';
   @State user_token: string = '';
   // @State user_token: string = (router.getParams() as Record<string, string>)['user_token'];
 
@@ -95,7 +95,14 @@ export default struct Picture_confrim_page {
         });
       }, 1000);
       setTimeout(() => {
-        router.back({ url:'pages/history_page',params: { request_token: this.request_token } });
+        // router.back({ url:'pages/history_page',params: { request_token: this.request_token } });
+        router.back({
+          url: 'pages/history_page',
+          params: {
+            finish: true,
+            token: this.request_token
+          }
+        });
       }, 2500);
     }
     else{
@@ -115,7 +122,13 @@ export default struct Picture_confrim_page {
           Column(){
             Button('返回')
               .onClick(() => {
-                router.back()
+                router.back({
+                  url: 'pages/history_page',
+                  params: {
+                    finish: false,
+                    token: this.request_token
+                  }
+                });
               })
           }
           .width('35%')
