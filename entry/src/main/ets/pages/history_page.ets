@@ -1,10 +1,11 @@
 import { router } from '@kit.ArkUI';
 import { http } from '@kit.NetworkKit';
 import { JSON } from '@kit.ArkTS';
+import  PreferencesUtils from '../utils/PreferenceUtils';
 
 //重要
-//在第15行，137行，164行，168行，193行出现user_token/url不清楚导致的问题，如果知晓user_token、url请修改
-
+//在第170,143行出现url不清楚导致的问题，如果知晓url请修改
+let user_token:string = ''
 //给历史记录打包
 export  class history_packet{
   is_finish:boolean = false;
@@ -12,7 +13,7 @@ export  class history_packet{
   title:string = ''//标题
   desc:string = ''//描述
   request_token:string = ''//任务token
-  //user_token:string = 'user_token'//用户的token，此处默认token为全局变量
+  user_token:string = user_token //用户的token，此处默认token为全局变量
   constructor(title: string, desc: string,image:string,task_token:string,finish:boolean) {
     this.title = title;
     this.desc = desc;
@@ -73,10 +74,15 @@ interface confirm{
 
 export default struct history {
   //packet被修改之后页面会刷新
+
   @State time:number|undefined = 0
   @State index:number = 0
   @State packet:Array<history_packet> = []
   @State message:string = '点击右上角“+”开始生成'
+  get_user_token()
+  {
+    PreferencesUtils.get('user_token').then(token=>{user_token = token as string})
+  }
   //将history_packet的包放入packet中
   push_packet(title:string,desc:string,image:string,task_token:string,finish:boolean)
   {
@@ -165,7 +171,7 @@ export default struct history {
       {
         method:http.RequestMethod.GET,
         header:{
-          'Authorization': 'Bearer ' // + user_token
+          'Authorization': 'Bearer ' + user_token
         }
     },(err,data)=>{
         if(!err)
@@ -179,6 +185,7 @@ export default struct history {
   }
   //渲染前调用，启动history接口+计时器
   aboutToAppear(): void {
+    this.get_user_token()
     this.before_page_show()
     this.startTimer()
   }
@@ -190,7 +197,7 @@ export default struct history {
         .fontColor('black')
         .fontSize(40)
         .onClick(() => {
-          router.pushUrl({url:'pages/picture_confrim_page'//,params:{user_token:user_token}
+          router.pushUrl({url:'pages/picture_confrim_page',params:{user_token:user_token}
           })
 
           //测试使用，后续可修改为从生成页面返回的request_token信息或其他信息
