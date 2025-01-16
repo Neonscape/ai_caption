@@ -2,3 +2,5 @@ pydantic
 uuid
 fastapi
 apscheduler
+loguru
+uvicorn[standard]
