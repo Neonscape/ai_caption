@@ -6,6 +6,7 @@ from collections import deque
 from typing import Optional
 from apscheduler.schedulers.background import BackgroundScheduler
 import uuid, asyncio, aiohttp, json
+from .db import TaskService
 
 caption_prompt = """
 请为这张图片生成RPG游戏中人物或物品的名字和描述，要求幽默诙谐，能让人会心一笑。
@@ -82,15 +83,19 @@ class JobQueue:
                 False, self.queue.index(self.token_map[request_token])
             )
         else:
-            return RequestQueryResult(True, None)
+            return RequestQueryResult(True, 0)
 
 
 @singleton
 class JobWorker:
-    def __init__(self, job_queue: JobQueue, caption_api_url: str):
+    def __init__(
+        self, job_queue: JobQueue, caption_api_url: str, task_service: TaskService
+    ):
         self.job_queue = job_queue
         self.scheduler = BackgroundScheduler()
         self.api_url = caption_api_url
+        self.current_requests: list[Optional[CaptionRequest]] = []
+        self.task_service: TaskService = task_service
 
     async def _process_job(self):
         """
@@ -100,7 +105,10 @@ class JobWorker:
         """
         request = self.job_queue.get_job()
         if request is None:
+            logger.info(f"No requests pending.")
             return
+
+        self.current_requests.append(request)
 
         logger.info(f"processing request {request.request_token}...")
         data = {
@@ -146,7 +154,15 @@ class JobWorker:
                 description="",
             )
 
-        # TODO: save job result to request database
+        self.task_service.add_request(
+            request_token=request.request_token,
+            user_token=request.user_token,
+            img=request.img,
+            title=caption_result.title,
+            description=caption_result.description,
+        )
+
+        self.current_requests.remove(request)
 
     def process_job(self):
         """

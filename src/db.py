@@ -3,13 +3,17 @@ import hashlib
 import uuid
 from loguru import logger
 
+
 def singleton(cls):
     instances = {}
+
     def get_instance(*args, **kwargs):
         if cls not in instances:
             instances[cls] = cls(*args, **kwargs)
         return instances[cls]
+
     return get_instance
+
 
 class Database:
     """
@@ -29,6 +33,7 @@ class Database:
         self.conn.close()
         logger.info("Database connection closed.")
 
+
 @singleton
 class UserDatabase(Database):
     """Database for user accounts."""
@@ -47,6 +52,7 @@ class UserDatabase(Database):
             """
         )
         self.conn.commit()
+
 
 @singleton
 class RequestDatabase(Database):
@@ -69,19 +75,24 @@ class RequestDatabase(Database):
         )
         self.conn.commit()
 
+
 class AuthService:
     def __init__(self):
         self.user_db = UserDatabase()
         self.user_db.init_database()
 
     def hash_password(self, password):
-        return hashlib.sha256(password.encode('utf-8')).hexdigest()
+        return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
     def register(self, username, password):
         # 检查重名
-        self.user_db.cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+        self.user_db.cursor.execute(
+            "SELECT * FROM users WHERE username = ?", (username,)
+        )
         if self.user_db.cursor.fetchone():
-            logger.warning(f"Registration failed: Username '{username}' already exists.")
+            logger.warning(
+                f"Registration failed: Username '{username}' already exists."
+            )
             return {"success": False, "message": "Username already exists."}
 
         # 生成编号
@@ -89,21 +100,26 @@ class AuthService:
 
         # 密码哈希
         hashed_password = self.hash_password(password)
-        
+
         try:
             self.user_db.cursor.execute(
                 "INSERT INTO users (username, user_token, password) VALUES (?, ?, ?)",
-                (username, user_token, hashed_password)
+                (username, user_token, hashed_password),
             )
             self.user_db.conn.commit()
             logger.info(f"User '{username}' registered successfully.")
             return {"success": True, "user_token": user_token}
         except sqlite3.Error as e:
             logger.error(f"Registration failed: {e}")
-            return {"success": False, "message": "Registration failed due to a database error."}
+            return {
+                "success": False,
+                "message": "Registration failed due to a database error.",
+            }
 
     def login(self, username, password):
-        self.user_db.cursor.execute("SELECT user_token, password FROM users WHERE username = ?", (username,))
+        self.user_db.cursor.execute(
+            "SELECT user_token, password FROM users WHERE username = ?", (username,)
+        )
         result = self.user_db.cursor.fetchone()
         if not result:
             logger.warning(f"Login failed: Username '{username}' does not exist.")
@@ -116,7 +132,9 @@ class AuthService:
             logger.info(f"User '{username}' logged in successfully.")
             return {"success": True, "user_token": user_token}
         else:
-            logger.warning(f"Login failed: Incorrect password for username '{username}'.")
+            logger.warning(
+                f"Login failed: Incorrect password for username '{username}'."
+            )
             return {"success": False, "message": "Incorrect password."}
 
     def change_password(self, user_token, old_password, new_password):
@@ -132,17 +150,23 @@ class AuthService:
             dict: 操作结果，包含成功状态和消息。
         """
         # 查询用户的当前密码
-        self.user_db.cursor.execute("SELECT password FROM users WHERE user_token = ?", (user_token,))
+        self.user_db.cursor.execute(
+            "SELECT password FROM users WHERE user_token = ?", (user_token,)
+        )
         result = self.user_db.cursor.fetchone()
         if not result:
-            logger.warning(f"Change password failed: Invalid user_token '{user_token}'.")
+            logger.warning(
+                f"Change password failed: Invalid user_token '{user_token}'."
+            )
             return {"success": False, "message": "Invalid user token."}
 
         stored_password = result[0]
         hashed_old_password = self.hash_password(old_password)
 
         if hashed_old_password != stored_password:
-            logger.warning(f"Change password failed: Incorrect old password for user_token '{user_token}'.")
+            logger.warning(
+                f"Change password failed: Incorrect old password for user_token '{user_token}'."
+            )
             return {"success": False, "message": "Incorrect old password."}
 
         # 哈希新密码
@@ -152,51 +176,85 @@ class AuthService:
         try:
             self.user_db.cursor.execute(
                 "UPDATE users SET password = ? WHERE user_token = ?",
-                (hashed_new_password, user_token)
+                (hashed_new_password, user_token),
             )
             self.user_db.conn.commit()
             logger.info(f"Password changed successfully for user_token '{user_token}'.")
             return {"success": True, "message": "Password changed successfully."}
         except sqlite3.Error as e:
             logger.error(f"Change password failed: {e}")
-            return {"success": False, "message": "Failed to change password due to a database error."}
+            return {
+                "success": False,
+                "message": "Failed to change password due to a database error.",
+            }
+
+    def verify_user_token(self, user_token: str):
+        self.user_db.cursor.execute(
+            "SELECT user_token FROM users WHERE user_token = ?", (user_token,)
+        )
+        result = self.user_db.cursor.fetchone()
+        if result is not None:
+            return True
+        else:
+            return False
+
+    def change_username(self, user_token: str, new_username: str):
+        if not self.verify_user_token(user_token=user_token):
+            return {
+                "success": False,
+                "error_message": "Invalid user token, please re-login!",
+            }
+        self.user_db.cursor.execute(
+            "UPDATE users SET username = ? WHERE user_token = ?",
+            (new_username, user_token),
+        )
+        return {"success": True, "error_message": ""}
+
 
 class TaskService:
     def __init__(self):
         self.request_db = RequestDatabase()
         self.request_db.init_database()
 
-    def add_request(self, user_token, img, title, description):
-        request_token = str(uuid.uuid4())
+    def add_request(self, request_token, user_token, img, title, description):
+        # request_token = str(uuid.uuid4())
         try:
             self.request_db.cursor.execute(
                 "INSERT INTO requests (request_token, user_token, img, title, description) VALUES (?, ?, ?, ?, ?)",
-                (request_token, user_token, img, title, description)
+                (request_token, user_token, img, title, description),
             )
             self.request_db.conn.commit()
             logger.info(f"Request '{request_token}' added for user '{user_token}'.")
             return {"success": True, "request_token": request_token}
         except sqlite3.Error as e:
             logger.error(f"Failed to add request: {e}")
-            return {"success": False, "message": "Failed to add request due to a database error."}
+            return {
+                "success": False,
+                "message": "Failed to add request due to a database error.",
+            }
 
     def get_history(self, user_token):
         try:
             self.request_db.cursor.execute(
                 "SELECT request_token, img, title, description FROM requests WHERE user_token = ?",
-                (user_token,)
+                (user_token,),
             )
             rows = self.request_db.cursor.fetchall()
             history = []
             for row in rows:
-                history.append({
-                    "request_token": row[0],
-                    "img": row[1],
-                    "title": row[2],
-                    "description": row[3]
-                })
+                history.append(
+                    {
+                        "request_token": row[0],
+                        "img": row[1],
+                        "title": row[2],
+                        "description": row[3],
+                    }
+                )
             logger.info(f"Retrieved history for user '{user_token}'.")
             return {"success": True, "history": history}
         except sqlite3.Error as e:
             logger.error(f"Failed to retrieve history: {e}")
-            return {"success": False, "message": "Failed to retrieve history due to a database error."}
+            return {
+                "success": False,
+                "message": "Failed to retrieve history due to a database error.",
+            }
