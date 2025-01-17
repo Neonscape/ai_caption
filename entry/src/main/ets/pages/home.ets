@@ -73,7 +73,12 @@ struct tabs {
     .backgroundColor('#f7f7f7')
     .border({ width: { top: 0.5 }, color: '#bbbbbb' })
   }
+  get_user_token()
+  {
+    PreferencesUtils.get('user_token').then(token=>{user_token = token as string})
+  }
   aboutToAppear(): void {
+    this.get_user_token()
     this.before_page_show()
   }
   un_json(data:string)
@@ -163,10 +168,6 @@ struct history {
   @State index:number = 0
   @Link packet:Array<history_packet>
   @State message:string = '点击右上角“+”开始生成'
-  get_user_token()
-  {
-    PreferencesUtils.get('user_token').then(token=>{user_token = token as string})
-  }
   //将history_packet的包放入packet中
   push_packet(title:string,desc:string,image:string,task_token:string,finish:boolean)
   {
@@ -313,7 +314,7 @@ struct history {
   }
   //渲染前调用，启动history接口+计时器
   aboutToAppear(): void {
-    this.get_user_token()
+    //this.get_user_token()
     //this.before_page_show()
     this.startTimer()
   }
