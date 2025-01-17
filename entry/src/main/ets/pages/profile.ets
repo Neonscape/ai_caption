@@ -54,7 +54,7 @@ export default struct Home {
         Column() {
           //用户信息
           Row() {
-            Image($r('app.media.avatar'))
+            Image($r('app.media.person'))
               .width(100)
               .height(100)
               .margin({ top: 30 })

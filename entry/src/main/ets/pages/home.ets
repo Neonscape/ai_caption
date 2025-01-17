@@ -148,11 +148,11 @@ struct tabs {
         TabContent() {
           history({packet:this.packet})
         }
-        .tabBar(this.TabBarBuilder(1, '历史记录？', $r('app.media.avatar'), $r('app.media.avatar')))
+        .tabBar(this.TabBarBuilder(1, '历史记录', $r('app.media.history'), $r('app.media.history')))
         TabContent() {
           profile()
         }
-        .tabBar(this.TabBarBuilder(2, '主页', $r('app.media.avatar'), $r('app.media.avatar')))
+        .tabBar(this.TabBarBuilder(2, '主页', $r('app.media.person'), $r('app.media.person')))
 
       }
       .onChange((index: number) => {
