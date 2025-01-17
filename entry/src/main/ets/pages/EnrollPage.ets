@@ -1,6 +1,7 @@
 import promptAction from '@ohos.promptAction'
 import router from '@ohos.router'
 import axios, { AxiosResponse } from '@ohos/axios'
+import PreferencesUtils from '../utils/PreferenceUtils'
 
 let base_url = "http://192.168.3.27:8081"
 
@@ -62,13 +63,14 @@ struct EnrollPage {
                 promptAction.showToast({
                   message:'注册成功'
                 })
+                PreferencesUtils.put("user_token", response.data.user_token)
                 router.pushUrl({
                   // 需要跳转的路径
                   url: 'pages/home'
                 })
               }else {
                 promptAction.showToast({
-                  message:'账号或密码格式不正确'
+                  message:`${response.data.error_msg}`
                 })
               }
             })

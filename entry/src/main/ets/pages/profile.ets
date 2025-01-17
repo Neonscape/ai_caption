@@ -28,7 +28,17 @@ export default struct Home {
 
   ]
   @State sign:string='签到'
+
+
+
+  async onPageShow(): Promise<void> {
+    // FIX THIS
+    console.info("update called")
+    this.name = (await PreferenceUtils.get("username")) as string
+  }
+
   async aboutToAppear(): Promise<void> {
+    console.info("aboutToAppear called")
     this.ID = (await PreferenceUtils.get("user_token")) as string
     let resp: AxiosResponse = await axios.get(
       base_url + '/get_username',
@@ -38,7 +48,6 @@ export default struct Home {
         }
       }
     )
-    console.info("get_username called, " + `data is ${resp}`)
     if (resp.data.success === false)
       promptAction.showToast({
         message: resp.data.error_msg

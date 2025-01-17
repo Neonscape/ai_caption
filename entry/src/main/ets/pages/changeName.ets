@@ -81,9 +81,14 @@ struct ModifyUsername {
                 promptAction.showToast({
                   message: resp.data.error_msg
                 })
-              else promptAction.showToast({
-                message: "Username updated."
-              })
+              else
+              {
+                promptAction.showToast({
+                  message: "Username updated."
+                })
+                PreferenceUtils.put("username", newUsername)
+                console.info("username changed.")
+              }
               // 调用接口修改
             })
         }
