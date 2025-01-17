@@ -115,7 +115,7 @@ struct tabs {
   push_packet(title:string,desc:string,image:string,task_token:string,finish:boolean)
   {
     let tmp=new history_packet(title,desc,image,task_token,finish)
-    this.packet.push(tmp)
+    this.packet.unshift(tmp)
   }
   get_param(t:confirm)
   {
@@ -172,7 +172,7 @@ struct history {
   push_packet(title:string,desc:string,image:string,task_token:string,finish:boolean)
   {
     let tmp=new history_packet(title,desc,image,task_token,finish)
-    this.packet.push(tmp)
+    this.packet.unshift(tmp)
   }
   //开启计时器，每分钟使用一次refresh函数
   startTimer() {
