@@ -1,7 +1,6 @@
 {
   "src": [
     "pages/Index",
-    "pages/history_page",
     "pages/picture_show_page",
     "pages/picture_confrim_page",
     "pages/EnrollPage",
