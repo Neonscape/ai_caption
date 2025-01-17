@@ -1,5 +1,9 @@
 import router from '@ohos.router'
 import promptAction from '@ohos.promptAction';
+import axios, {AxiosResponse, AxiosError} from '@ohos/axios'
+import PreferenceUtils from '../utils/PreferenceUtils'
+
+let base_url = "http://192.168.3.27:8081"
 interface list{
   text: string;
   image: Resource;
@@ -24,6 +28,26 @@ export default struct Home {
 
   ]
   @State sign:string='签到'
+  async aboutToAppear(): Promise<void> {
+    let resp: AxiosResponse = await axios.get(
+      base_url + '/getUsername',
+      Object({
+        "user_token": await PreferenceUtils.get("user_token", String) as string,
+      })
+    )
+    console.info(resp.data)
+    if (resp.data.success === false)
+      promptAction.showToast({
+        message: resp.data.error_msg
+      })
+    else {
+      promptAction.showToast({
+        message: "信息获取成功"
+      })
+      this.name=resp.data.name
+    }
+
+  }
   build() {
     Column() {
       Scroll() {
