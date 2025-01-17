@@ -16,7 +16,7 @@ export default struct Picture_show_page {
   async show(){
     // decode
     let helper = new util.Base64Helper();
-    let buffer: ArrayBuffer = helper.decodeSync(tmpImage.split('image/jpeg;base64,')[1], util.Type.MIME).buffer as ArrayBuffer;
+    let buffer: ArrayBuffer = helper.decodeSync(tmpImage.split('data:image/jpeg;base64,')[1], util.Type.MIME).buffer as ArrayBuffer;
     // let buffer: ArrayBuffer = helper.decodeSync(this.image.split('image/jpeg;base64,')[1], util.Type.MIME).buffer as ArrayBuffer;
     let imageSource = image.createImageSource(buffer);
     let opts: image.DecodingOptions = { editable: true };

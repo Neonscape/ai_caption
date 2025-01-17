@@ -32,7 +32,7 @@ interface Item {
   index?: number; // 可选字段，因为只有在未完成时才会有值
   image?: string; // 可选字段
   title?: string; // 可选字段
-  desc?: string;  // 可选字段
+  description?: string;  // 可选字段
   task_token:string
 }
 interface HistoryResponse {
@@ -164,9 +164,10 @@ struct history {
     let js_data = JSON.parse(data);
     (js_data as HistoryResponse).items.forEach(item=>
     {
-      if(item.title&&item.desc&&item.image)
+      console.info(JSON.stringify(item))
+      if(item.title&&item.description&&item.image)
       {
-        this.push_packet(item.title,item.desc,item.image,item.task_token,item.status)
+        this.push_packet(item.title,item.description,item.image,item.task_token,item.status)
       }
       else
       {
@@ -257,7 +258,7 @@ struct history {
         "user_token": user_token
       })
     ).then((res: AxiosResponse) => {
-      this.un_json(res.data.result)
+      this.un_json(JSON.stringify(res.data))
     }).catch((e: AxiosError) => {
       console.log("error: " + e.message);
     })
