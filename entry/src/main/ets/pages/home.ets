@@ -161,6 +161,7 @@ struct history {
   un_json(data:string)
   {
     //console.debug(data)
+    this.packet = []
     let js_data = JSON.parse(data);
     (js_data as HistoryResponse).items.forEach(item=>
     {
