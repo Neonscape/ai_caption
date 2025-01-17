@@ -148,7 +148,8 @@ struct history {
   }
   //开启计时器，每分钟使用一次refresh函数
   startTimer() {
-    this.time = setInterval(this.refresh, 60000);
+    this.time = setInterval(this.refresh.bind(this), 5000);
+
   }
   //关闭计时器
   aboutToDisappear() {
