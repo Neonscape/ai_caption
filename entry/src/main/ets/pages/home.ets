@@ -73,9 +73,9 @@ struct tabs {
     .backgroundColor('#f7f7f7')
     .border({ width: { top: 0.5 }, color: '#bbbbbb' })
   }
-  get_user_token()
+  async get_user_token()
   {
-    PreferencesUtils.get('user_token').then(token=>{user_token = token as string})
+    user_token = await PreferencesUtils.get('user_token') as string
   }
   aboutToAppear(): void {
     this.get_user_token()
@@ -99,9 +99,10 @@ struct tabs {
       }
     })
   }
-  before_page_show() {
+  async before_page_show() {
+    await this.get_user_token()
     //TODO 与后端交互获取
-    axios.post(
+    await axios.post(
       base_url + '/history',
       Object({
         "user_token": user_token
