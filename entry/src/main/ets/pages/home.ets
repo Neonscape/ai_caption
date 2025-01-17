@@ -73,13 +73,40 @@ struct tabs {
     .backgroundColor('#f7f7f7')
     .border({ width: { top: 0.5 }, color: '#bbbbbb' })
   }
-  // aboutToAppear(){
-  //   if(!this.user){
-  //     router.replaceUrl({
-  //       url:'pages/user/login'
-  //     })
-  //   }
-  // }
+  aboutToAppear(): void {
+    this.before_page_show()
+  }
+  un_json(data:string)
+  {
+    //console.debug(data)
+    this.packet = []
+    let js_data = JSON.parse(data);
+    (js_data as HistoryResponse).items.forEach(item=>
+    {
+      console.info(JSON.stringify(item))
+      if(item.title&&item.description&&item.image)
+      {
+        this.push_packet(item.title,item.description,item.image,item.task_token,item.status)
+      }
+      else
+      {
+        this.push_packet('正在生成','','',item.task_token,item.status)
+      }
+    })
+  }
+  before_page_show() {
+    //TODO 与后端交互获取
+    axios.post(
+      base_url + '/history',
+      Object({
+        "user_token": user_token
+      })
+    ).then((res: AxiosResponse) => {
+      this.un_json(JSON.stringify(res.data))
+    }).catch((e: AxiosError) => {
+      console.log("error: " + e.message);
+    })
+  }
   push_packet(title:string,desc:string,image:string,task_token:string,finish:boolean)
   {
     let tmp=new history_packet(title,desc,image,task_token,finish)
@@ -287,7 +314,7 @@ struct history {
   //渲染前调用，启动history接口+计时器
   aboutToAppear(): void {
     this.get_user_token()
-    this.before_page_show()
+    //this.before_page_show()
     this.startTimer()
   }
 
