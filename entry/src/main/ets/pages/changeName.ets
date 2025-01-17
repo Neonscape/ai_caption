@@ -43,6 +43,9 @@ struct ModifyUsername {
             .backgroundColor('#fff')
             .borderRadius(8)
             .margin({ bottom: 20 })
+            .onChange((value) => {
+              this.username = value
+            })
         }
 
         // Check for Invalid Input
@@ -65,10 +68,11 @@ struct ModifyUsername {
             .fontColor('#fff')
             .onClick(async () => {
               const newUsername = this.username
+              console.info(`new name: ${newUsername}`)
               let resp: AxiosResponse = await axios.post(
                 base_url + '/change_username',
                 Object({
-                  "user_token": await PreferenceUtils.get("user_token", String) as string,
+                  "user_token": await PreferenceUtils.get("user_token") as string,
                   "new_username": newUsername
                 })
               )

@@ -29,13 +29,16 @@ export default struct Home {
   ]
   @State sign:string='签到'
   async aboutToAppear(): Promise<void> {
+    this.ID = (await PreferenceUtils.get("user_token")) as string
     let resp: AxiosResponse = await axios.get(
       base_url + '/get_username',
-      Object({
-        "user_token": await PreferenceUtils.get("user_token", String) as string,
-      })
+      {
+        params:{
+          "user_token": this.ID
+        }
+      }
     )
-    console.info(resp.data)
+    console.info("get_username called, " + `data is ${resp}`)
     if (resp.data.success === false)
       promptAction.showToast({
         message: resp.data.error_msg
@@ -60,11 +63,12 @@ export default struct Home {
               .margin({ top: 30 })
               .borderRadius(100)
 
+
             Column() {
               Text(this.name)
                 .fontSize(30)
                 .margin({ left: 0, top: 30 })
-              Text('ID:' + this.ID)
+              /*Text('ID:' + this.ID)*/
             }
             .height(100)
             .margin({ top: 30, left: 20 })

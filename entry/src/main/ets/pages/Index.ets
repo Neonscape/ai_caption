@@ -62,6 +62,7 @@ struct Login {
               console.info(JSON.stringify(response));
               if(response.data.success === true)
               {
+                console.info("user info updated")
                 PreferencesUtils.put("username", this.username)
                 PreferencesUtils.put("user_token", response.data.user_token)
                 promptAction.showToast({
