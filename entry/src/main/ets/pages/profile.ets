@@ -30,7 +30,7 @@ export default struct Home {
   @State sign:string='签到'
   async aboutToAppear(): Promise<void> {
     let resp: AxiosResponse = await axios.get(
-      base_url + '/getUsername',
+      base_url + '/get_username',
       Object({
         "user_token": await PreferenceUtils.get("user_token", String) as string,
       })
