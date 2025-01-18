@@ -12,6 +12,8 @@ export default struct Picture_show_page {
   @State image: string = (router.getParams() as Record<string, string>)['image'];
   @State title: string = (router.getParams() as Record<string, string>)['title'];
   @State desc: string = (router.getParams() as Record<string, string>)['desc'];
+  @State currentBreakpoint: string = 'unknown';
+  @State paddingSize: number  = 0;
 
   async show(){
     // decode
@@ -26,54 +28,72 @@ export default struct Picture_show_page {
   aboutToAppear(): void {
     this.show();
   }
-  build() {
-    Row() {
-      Column() {
+
+  build(){
+    RelativeContainer() {
+      Column(){
         Blank()
           .height('3%')
-        Row(){
-          Column(){
-            Button('< 返回', {
-              type: ButtonType.Normal,
+        Column() {
+          Button('< 返回', {
+            type: ButtonType.Normal,
+          })
+            .fontColor("#000000")
+            .backgroundColor("#00000000")
+            .onClick(() => {
+              router.back()
             })
-              .fontColor("#000000")
-              .backgroundColor("#00000000")
-              .onClick(() => {
-                router.back()
-              })
-          }
-          .width('35%')
-          Column(){}
-          .width('65%')
         }
-        .height('10%')
-        Blank()
-          .height('4%')
-        Image(this.pixel)
-          .width('80%')
-          .aspectRatio(1)
+        .alignItems(HorizontalAlign.Start)
+        // .width('80%')
+        .width(this.currentBreakpoint !== 'lg' ? '80%' : '90%')
         Blank()
           .height('5%')
-        Text(this.title)
-          .textAlign(TextAlign.Start)
-          .width('80%')
-          .fontSize(50)
-          .fontWeight(FontWeight.Bold)
-          .padding({top: 15, left: 20, bottom: 10})
-        Blank('3%')
-        Text(this.desc)
-          .textAlign(TextAlign.Start)
-          .width('80%')
-          .fontSize(20)
-          .padding({top: 10, left: 20, bottom: 20})
-        Blank()
-          .height('25%')
+        GridRow({
+          columns: {
+            sm: 4,
+            md: 4,
+            lg: 12
+          }
+        }) {
+          GridCol({span: {sm: 4, md: 4, lg: 6}}) {
+            Column(){
+              Image(this.pixel).width('80%').height('80%')
+            }
+            .width('100%')
+            .height('100%')
+            .aspectRatio(1)
+          }
+          .height(this.currentBreakpoint !== 'lg' ? '43%' : '100%')
 
+          GridCol({span: {sm: 4, md: 4, lg: 6}}) {
+            Column(){
+              Text(this.title)
+                .textAlign(TextAlign.Start)
+                .width('80%')
+                .fontSize(50)
+                .fontWeight(FontWeight.Bold)
+                .padding({top: 15, left: 20, bottom: 10})
+              Text(this.desc)
+                .textAlign(TextAlign.Start)
+                .width('80%')
+                .fontSize(20)
+                .padding({top: 10, left: 20, bottom: 20})
+              Blank()
+                .height('20%')
+            }
+            .width('100%')
+            .height('auto')
+          }
+        }
+        .onBreakpointChange((currentBreakpoint: string) => {
+          this.currentBreakpoint = currentBreakpoint
+        })
       }
       .width('100%')
       .height('100%')
     }
     .height('100%')
-    .backgroundColor('#F1F3F5')
+    .width('100%')
   }
 }

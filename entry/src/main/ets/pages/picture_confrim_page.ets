@@ -29,6 +29,8 @@ export default struct Picture_confrim_page {
   @State base64Str: string = '';
   @State request_token : string = '1919810';
   @State user_token: string = '';
+  @State currentBreakpoint: string = 'unknown';
+  @State paddingSize: number  = 0;
   // @State user_token: string = (router.getParams() as Record<string, string>)['user_token'];
 
   async getPictureFromAlbum() {
@@ -133,60 +135,83 @@ export default struct Picture_confrim_page {
     }
   }
 
-  build() {
-    Row() {
-      Column() {
+  build(){
+    RelativeContainer() {
+      Column(){
         Blank()
           .height('3%')
-        Row(){
-          Column(){
-            Button('返回')
-              .onClick(() => {
-                router.back({
-                  url: 'pages/home',
-                  params: {
-                    finish: false,
-                    token: this.request_token
-                  }
-                });
-              })
-          }
-          .width('35%')
-          Column(){}
-          .width('65%')
+        Column() {
+          Button('返回')
+            .onClick(() => {
+              router.back({
+                url: 'pages/home',
+                params: {
+                  finish: false,
+                  token: this.request_token
+                }
+              });
+            })
         }
-          .height('10%')
-        Blank()
-          .height('10%')
-        Image(this.pixel)
-          .width('80%')
-          .aspectRatio(1)
+        .alignItems(HorizontalAlign.Start)
+        // .width('80%')
+        .width(this.currentBreakpoint !== 'lg' ? '80%' : '90%')
         Blank()
           .height('5%')
-        Row(){
-          Column(){
-            Button('选择图片')
-              .width('70%')
-              .onClick(() => {
-                this.getPictureFromAlbum();
-              })
+        GridRow({
+          columns: {
+            sm: 4,
+            md: 4,
+            lg: 12
           }
-          .width('50%')
-          Column(){
-            Button('开始生成')
-              .width('70%')
-              .onClick(() => {
-                this.generate();
-              })
+        }) {
+          GridCol({span: {sm: 4, md: 4, lg: 6}}) {
+            Column(){
+              Blank()
+                .height(this.currentBreakpoint !== 'lg' ? '25%' : '0')
+              Image(this.pixel).width('80%').height('80%')
+            }
+            .width('100%')
+            .height('100%')
+            .aspectRatio(1)
           }
-          .width('50%')
+          .height(this.currentBreakpoint !== 'lg' ? '75%' : '100%')
+
+          GridCol({span: {sm: 4, md: 4, lg: 6}}) {
+              Column(){
+                Row(){
+                  Column(){
+                    Button('选择图片')
+                      .width('70%')
+                      .onClick(() => {
+                        this.getPictureFromAlbum();
+                      })
+                  }
+                  .width('50%')
+                  Column(){
+                    Button('开始生成')
+                      .width('70%')
+                      .onClick(() => {
+                        this.generate();
+                      })
+                  }
+                  .width('50%')
+                }
+                .width('100%')
+                .height(this.currentBreakpoint !== 'lg' ? 'auto' : '60%')
+                // Blank()
+                // .height('25%')
+            }
+            .width('100%')
+          }
         }
-          .height('10%')
-        Blank()
-          .height('20%')
+        .onBreakpointChange((currentBreakpoint: string) => {
+          this.currentBreakpoint = currentBreakpoint
+        })
       }
       .width('100%')
+      .height('100%')
     }
     .height('100%')
+    .width('100%')
   }
 }
