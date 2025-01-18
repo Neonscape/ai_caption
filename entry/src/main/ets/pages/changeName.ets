@@ -1,7 +1,7 @@
 import axios, {AxiosResponse, AxiosError} from '@ohos/axios'
 import PreferenceUtils from '../utils/PreferenceUtils'
 import promptAction from '@ohos.promptAction';
-
+import router from '@ohos.router';
 let base_url = "http://192.168.3.27:8081"
 
 @Entry
@@ -59,7 +59,7 @@ struct ModifyUsername {
 
         // Save Button
         Row() {
-          Button('保存')
+          Button('保存并返回')
             .fontSize(16)
             .fontWeight(FontWeight.Bold)
             .width('100%')
@@ -88,6 +88,10 @@ struct ModifyUsername {
                 })
                 PreferenceUtils.put("username", newUsername)
                 console.info("username changed.")
+                router.replaceUrl({
+                  url: 'pages/home'
+                }
+                )
               }
               // 调用接口修改
             })
