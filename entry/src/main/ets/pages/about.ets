@@ -5,33 +5,29 @@ struct About {
     Column() {
       // Navigation Bar
       Navigation()
-        .title('关于 xxx软件')
-        .height(60)
+        .title('关于我们')
+        .height(90)
         .backgroundColor('#4CAF50')
         .titleMode(NavigationTitleMode.Mini)
-        .margin({ top: 30 })
+        //.margin({ top: 30 })
 
       // Application Info Section
       Column() {
         Row() {
           Column() {
-            Image($r('app.media.avatar')) // Replace with actual logo
+            Image($r('app.media.icon_alt')) // Replace with actual logo
               .width(120)
               .height(120)
               .borderRadius(15)
             // .alignment('center')
-            Text('APP名称')
+            Text($r('app.string.EntryAbility_label'))
               .fontSize(30)
               .fontWeight(FontWeight.Bold)
               .fontColor('#333')
             // .alignment('center')
-            Text('实现的目标')
+            Text('用AI描绘你的生活！')
               .fontSize(18)
               .fontColor('#666')
-            // .alignment('center')
-            Text('当前版本: 1.0')
-              .fontSize(18)
-              .fontColor('#333')
             // .alignment('center')
           }
         }
@@ -73,7 +69,7 @@ struct About {
         .alignSelf(ItemAlign.Start)
 
         Row() {
-          Text(`TODO`)
+          Text(`用AI描述你的生活，为生活增添乐趣`)
             .fontSize(14)
             .fontColor('#555')
             .padding({ bottom: 5 })
@@ -93,7 +89,7 @@ struct About {
         .alignSelf(ItemAlign.Start)
 
         Row() {
-          Text(`邮箱: TODO`) // Replace with real email
+          Text(`邮箱: neonscapemail@gmail.com`) // Replace with real email
             .fontSize(14)
             .fontColor('#555')
             .padding({ bottom: 5 })
@@ -114,13 +110,13 @@ struct About {
         .alignSelf(ItemAlign.Start)
 
         Row() {
-          Text(`TODO`)
+          Text(`https://git.nju.edu.cn/Neonscape/ai_caption_frontend`)
             .fontSize(14)
             .fontColor('#0066cc')
             .padding({ bottom: 5 })
             .onClick(() => {
               // Open the GitHub project link when clicked
-              // openUrl('TODO');
+              // openUrl('https://git.nju.edu.cn/Neonscape/ai_caption_frontend');
             })
         }
         .width('100%')

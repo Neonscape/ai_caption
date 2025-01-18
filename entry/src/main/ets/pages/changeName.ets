@@ -14,10 +14,10 @@ struct ModifyUsername {
       // Navigation Bar
       Navigation()
         .title('修改用户名')
-        .height(60)
+        .height(90)
         .backgroundColor('#4CAF50')
         .titleMode(NavigationTitleMode.Mini)
-        .margin({ top: 30 })
+        //.margin({ top: 30 })
 
       // Modify Username Section
       Column() {

@@ -8,11 +8,11 @@ struct Place {
       // Navigation Bar
       Navigation()
         .title('个人信息')
-        .height(60)
+        .height(90)
         .titleMode(NavigationTitleMode.Mini)
         .backgroundColor('#4CAF50')
           // .titleColor('#fff')
-        .margin({ top: 30, bottom: 20 })
+        //.margin({bottom: 20 })
 
       // Address list display section
       Column() {
@@ -61,7 +61,7 @@ struct Place {
     }
     .width('100%')
     .height('100%')
-    .padding({ top: 30, bottom: 30 })
+    .padding({bottom: 30 })
     .backgroundColor('#f9f9f9') // Light background for the page
   }
 }

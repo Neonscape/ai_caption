@@ -27,7 +27,7 @@ struct Login {
   build() {
     Column() {
       //用户头像(导入所需图片)
-      Image($r('app.media.startIcon'))
+      Image($r('app.media.icon_alt'))
         .width(80)
         .height(80)
         .margin({top:100})
