@@ -355,12 +355,15 @@ struct history {
             ForEach(this.packet, (item: history_packet) => {
               ListItem() {
                 Column() {
-                  Text(item.title).fontSize(30).fontWeight(FontWeight.Normal)
-                  Text(item.desc).fontSize(20).fontWeight(FontWeight.Regular)
+                  Text(item.title).fontSize(30).fontWeight(FontWeight.Bold).padding({top: 5, bottom: 5})
+                  Text(item.desc).fontSize(20).fontWeight(FontWeight.Regular).padding({top: 5, bottom: 5})
                 }
                 .width('100%')
                 .alignItems(HorizontalAlign.Start)
-              }.backgroundColor(0xDCDCDC)
+                .padding({top: 10, left: 15, right: 15, bottom: 10})
+              }.backgroundColor(0xA3E3B2)
+              .border({radius: 10})
+              .padding({top:5, left: 15, right: 15, bottom: 5})
               .onClick(()=>{
                 router.pushUrl({
                   url:'pages/picture_show_page',
@@ -375,7 +378,9 @@ struct history {
           }
           .height("100%")
           .width('100%')
+          .padding({top: 5, left: 5, right: 5, bottom: 5})
         }
+
       }
       .mode(NavigationMode.Stack)
       .title("历史记录")

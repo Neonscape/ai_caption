@@ -118,8 +118,8 @@ export default struct Home {
 
           //退出登录
           Button('退出登录')
+            .backgroundColor("#00000000")
             .margin({ top: 100 })
-            .backgroundColor('#eeeeee')
             .fontColor('#000000')
             .fontSize(20)
             .onClick(() => {

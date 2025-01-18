@@ -29,6 +29,7 @@ struct EnrollPage {
         .width(80)
         .height(80)
         .margin({top:100})
+        .border({radius: 15})
       //注册界面
       Text('注册').fontColor('#ff011221')
         .margin({top: 10})

@@ -31,6 +31,7 @@ struct Login {
         .width(80)
         .height(80)
         .margin({top:100})
+        .border({radius: 15})
       //登录界面
       Text('登录').fontColor('#ff011221')
         .margin({top: 10})

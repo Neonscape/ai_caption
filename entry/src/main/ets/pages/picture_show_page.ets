@@ -33,7 +33,11 @@ export default struct Picture_show_page {
           .height('3%')
         Row(){
           Column(){
-            Button('返回')
+            Button('< 返回', {
+              type: ButtonType.Normal,
+            })
+              .fontColor("#000000")
+              .backgroundColor("#00000000")
               .onClick(() => {
                 router.back()
               })
@@ -55,11 +59,13 @@ export default struct Picture_show_page {
           .width('80%')
           .fontSize(50)
           .fontWeight(FontWeight.Bold)
+          .padding({top: 15, left: 20, bottom: 10})
         Blank('3%')
         Text(this.desc)
           .textAlign(TextAlign.Start)
           .width('80%')
           .fontSize(20)
+          .padding({top: 10, left: 20, bottom: 20})
         Blank()
           .height('25%')
 
